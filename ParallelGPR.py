@@ -6,6 +6,7 @@ import joblib
 from joblib import Parallel, delayed
 import scipy
 import math 
+import pandas as pd
 
 
 class ParallelGPR:
@@ -65,3 +66,14 @@ class ParallelGPR:
 
     def load(self, name):
         self.mod, self.w = load(f"{name}.joblib")
+        
+        
+ def fitParallelGPR(name, number_models = 40, name_model = "Parallel", save = True):
+    df = pd.read_csv(name).to_numpy()[:,1:]
+    X = df[:,1:]
+    y = df[:,0]
+    m = ParallelGPR(number_models)
+    m.fit(X,y)
+    if save:
+        m.save(name_model)
+    return m 
