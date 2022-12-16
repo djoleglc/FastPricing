@@ -67,8 +67,8 @@ class ParallelGPR:
     def load(self, name):
         self.mod, self.w = load(f"{name}.joblib")
         
-  
-def fitParallelGPR(name, number_models = 40, name_model = "Parallel", save = True):
+
+def fitParallelGPR(name, number_models = 40, name_model = "Parallel", save = True, time_ = True):
     """
     Function to fit a Parallel Gaussian Process Regressor given a Pandas dataframe containing in the first column 
     the price to learn, and in the remaining columns the feature used to learn the pricing function 
@@ -82,7 +82,11 @@ def fitParallelGPR(name, number_models = 40, name_model = "Parallel", save = Tru
     X = df[:,1:]
     y = df[:,0]
     m = ParallelGPR(number_models)
+    s = time.time()
     m.fit(X,y)
+    e = time.time()
+    if time_:
+        print(f"Time:  {e-s}")
     if save:
         m.save(name_model)
     return m 
