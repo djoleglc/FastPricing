@@ -77,6 +77,7 @@ def fitParallelGPR(name, number_models = 40, name_model = "Parallel", save = Tru
     - save: boolean variable that describes if the model need to be fitted
     - name_model: string variable describing the how the model need to be saved, to use without .joblib extension.
                   needed only when save = True
+    -time_ : boolean variable describing if it needed to return the fitting time 
     """
     df = pd.read_csv(name).to_numpy()[:,1:]
     X = df[:,1:]
