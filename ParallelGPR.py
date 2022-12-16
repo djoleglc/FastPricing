@@ -7,6 +7,7 @@ from joblib import Parallel, delayed
 import scipy
 import math 
 import pandas as pd
+import time 
 
 
 class ParallelGPR:
