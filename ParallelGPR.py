@@ -88,7 +88,7 @@ def fitParallelGPR(name, number_models = 40, name_model = "Parallel", save = Tru
     m.fit(X,y)
     e = time.time()
     if time_:
-        print(f"Time:  {e-s}")
+        print(f"Fitting Time:  {e-s}\n")
     if save:
         m.save(name_model)
     return m 
