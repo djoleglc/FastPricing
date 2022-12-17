@@ -30,6 +30,7 @@ Given the competitiveness of a market-making environment, the ability to speedil
 - `ParallelGPR.ipynb`
 - `NeuralNetLarge.ipynb`
 - `NeuralNetDeep.ipynb`
+- `RandomForest.ipynb`
 - `VisualizeError.ipynb`
 - `Greeks.ipynb`
 
