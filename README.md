@@ -6,6 +6,7 @@ Given the competitiveness of a market-making environment, the ability to speedil
 - `HestonFFT.py`
 
 ## Gaussian Process Regression
+- `FitGPR.py`
 - `ParallelGPR.py`
 - `GreeksGPR.py`
 
