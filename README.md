@@ -4,6 +4,7 @@ Given the competitiveness of a market-making environment, the ability to speedil
 
 ## Create dataset
 - `HestonFFT.py`
+- `Simulation.py`
 
 ## Gaussian Process Regression
 - `FitGPR.py`
@@ -19,6 +20,7 @@ Given the competitiveness of a market-making environment, the ability to speedil
 - `optim.py`
 
 ## Notebooks
+- `SimulationHeston.ipynb`
 - `GPR.ipynb`
 - `ParallelGPR.ipynb`
 - `NeuralNetLarge.ipynb`
