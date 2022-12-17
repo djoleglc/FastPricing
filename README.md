@@ -18,7 +18,11 @@ Given the competitiveness of a market-making environment, the ability to speedil
 ## Utils
 - `TestPerformance.py`
 - `VisualizeError.py`
+- `PlotUtils.py`
 - `optim.py`
+
+## Greeks
+- `Greeks.py`
 
 ## Notebooks
 - `SimulationHeston.ipynb`
@@ -27,4 +31,6 @@ Given the competitiveness of a market-making environment, the ability to speedil
 - `NeuralNetLarge.ipynb`
 - `NeuralNetDeep.ipynb`
 - `VisualizeError.ipynb`
+- `Greeks.ipynb`
+
 
