@@ -17,6 +17,7 @@ Given the competitiveness of a market-making environment, the ability to speedil
 
 ## Utils
 - `TestPerformance.py`
+- `VisualizeError.py`
 - `optim.py`
 
 ## Notebooks
@@ -25,3 +26,5 @@ Given the competitiveness of a market-making environment, the ability to speedil
 - `ParallelGPR.ipynb`
 - `NeuralNetLarge.ipynb`
 - `NeuralNetDeep.ipynb`
+- `VisualizeError.ipynb`
+
