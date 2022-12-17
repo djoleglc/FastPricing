@@ -10,6 +10,7 @@ Given the competitiveness of a market-making environment, the ability to speedil
 - `FitGPR.py`
 - `ParallelGPR.py`
 - `GreeksGPR.py`
+- `FitGreeksGPR.py`
 
 ## Neural Network
 - `ModelDeep.py`
@@ -23,6 +24,8 @@ Given the competitiveness of a market-making environment, the ability to speedil
 
 ## Greeks
 - `Greeks.py`
+- `GreeksFFT.m`
+
 
 ## Notebooks
 - `SimulationHeston.ipynb`
@@ -33,5 +36,7 @@ Given the competitiveness of a market-making environment, the ability to speedil
 - `RandomForest.ipynb`
 - `VisualizeError.ipynb`
 - `Greeks.ipynb`
+- `GreeksGPR.ipynb`
+
 
 
