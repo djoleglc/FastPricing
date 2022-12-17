@@ -11,7 +11,8 @@ Given the competitiveness of a market-making environment, the ability to speedil
 - `GreeksGPR.py`
 
 ## Neural Network
-- `NN.py`
+- `ModelDeep.py`
+- `ModelLarge.py`
 
 ## Utils
 - `TestPerformance.py`
@@ -20,4 +21,5 @@ Given the competitiveness of a market-making environment, the ability to speedil
 ## Notebooks
 - `GPR.ipynb`
 - `ParallelGPR.ipynb`
-- `NeuralNet.ipynb`
+- `NeuralNetLarge.ipynb`
+- `NeuralNetDeep.ipynb`
