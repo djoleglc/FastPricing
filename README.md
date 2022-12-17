@@ -18,6 +18,6 @@ Given the competitiveness of a market-making environment, the ability to speedil
 - `optim.py`
 
 ## Notebooks
--`GPR.ipynb`
+- `GPR.ipynb`
 - `ParallelGPR.ipynb`
 - `NeuralNet.ipynb`
