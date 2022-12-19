@@ -2,6 +2,10 @@ import pandas as pd
 import time
 from joblib import dump
 import numpy as np
+from sklearn.gaussian_process import GaussianProcessRegressor
+import sklearn.gaussian_process.kernels as k
+from optim import optim
+from TestPerformance import test_performanceGPR
 
 
 def fitGPR(name, model, name_model=None, save=True, time_=False):
@@ -26,3 +30,47 @@ def fitGPR(name, model, name_model=None, save=True, time_=False):
     if save:
         dump(model, name_model)
     return model
+
+
+class cv_alpha_GPR:
+    def __init__(self):
+        self.mae = []
+        self.aae = []
+        self.bestMAE = None
+        self.bestAAE = None
+
+    def fit(self, alphas, price_dataset, validation_dataset):
+
+        for i, alpha_ in enumerate(alphas):
+            kernel = k.RBF()
+            mod = GaussianProcessRegressor(
+                kernel=kernel, optimizer=optim, alpha=alpha_, random_state=10
+            )
+            mod = fitGPR(
+                name=price_dataset,
+                model=mod,
+                save=False,
+                time_=True,
+            )
+
+            # performance of the model
+            print(f"alpha:   {alpha_}")
+            print(validation_dataset)
+            df = pd.read_csv(validation_dataset).to_numpy()[:, 1:]
+            X = df[:, 1:]
+            y = df[:, 0]
+            aae_, mae_ = test_performanceGPR(X, y, mod, type_="both", to_return=True)
+            self.mae.append(mae_)
+            self.aae.append(aae_)
+
+            if i > 0:
+                if mae_ <= np.min(self.mae):
+                    self.bestMAE = mod
+                if aae_ <= np.min(self.aae):
+                    self.bestAAE = mod
+            else:
+                self.bestMAE = mod
+                self.bestAAE = mod
+            print("\n")
+
+        return self
