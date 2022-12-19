@@ -37,6 +37,6 @@ Given the competitiveness of a market-making environment, the ability to speedil
 - `VisualizeError.ipynb`
 - `Greeks.ipynb`
 - `GreeksGPR.ipynb`
-
+- `AlphaValidation.ipynb`
 
 
