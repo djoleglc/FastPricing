@@ -2,29 +2,50 @@ import pandas as pd
 import time
 from joblib import dump
 import numpy as np
-from sklearn.gaussian_process import GaussianProcessRegressor
-import sklearn.gaussian_process.kernels as k
-from optim import optim
+import joblib
+import multiprocessing
 from TestPerformance import test_performanceGPR
 
 
-def fitGPR(name, model, name_model=None, save=True, time_=False):
+def fitGreeksGPR(
+    greek_df, price_df, model, name_model=None, save=False, time_=True, restart=2
+):
     """
     Function to fit a Parallel Gaussian Process Regressor given a Pandas dataframe containing in the first column
     the price to learn, and in the remaining columns the feature used to learn the pricing function
-    - name: string variable describing the name of the dataset to use as training sample.
-    - number_models: int variable that specifies how many models need to be fitted.
+    Note that both greeks ans prices dataframe need to be pandas dataframe
+
+    - greek_df: string variable describing the name of the csv containing the greeks to use to help
+                the training phase ( in the following order "theta", "delta", "vega", "vegalt", "rho" )
+    - price_df: string variable describing the name of the csv containing prices (first columns) and features
     - save: boolean variable that describes if the model need to be fitted
     - name_model: string variable describing the how the model need to be saved, to use without .joblib extension.
                   needed only when save = True
     -time_ : boolean variable describing if it needed to return the fitting time
     """
-    df = pd.read_csv(name).to_numpy()[:, 1:]
+    greeks = pd.read_csv(greek_df, header=None)
+    greeks.columns = ["theta", "delta", "vega", "vegalt", "rho"]
+
+    if model.__class__.__name__ == "DeltaGPR":
+        greek_variable = greeks.delta
+    elif model.__class__.__name__ == "RhoGPR":
+        greek_variable = greeks.rho
+    else:
+        raise Exception("Model not supported")
+
+    df = pd.read_csv(price_df).to_numpy()[:, 1:]
     X = df[:, 1:]
-    y = df[:, 0]
-    s = time.time()
-    model.fit(X, y)
-    e = time.time()
+    price, greek_variable = df[:, 0], greek_variable.to_numpy()
+
+    if model.__class__.__name__ == "DeltaGPR":
+        s = time.time()
+        model.fit(X, price, greek_variable - price, times=restart)
+        e = time.time()
+    if model.__class__.__name__ == "RhoGPR":
+        s = time.time()
+        model.fit(X, price, greek_variable, times=restart)
+        e = time.time()
+
     if time_:
         print(f"Fitting Time:  {e-s}")
     if save:
@@ -32,25 +53,24 @@ def fitGPR(name, model, name_model=None, save=True, time_=False):
     return model
 
 
-class cv_alpha_GPR:
+class cv_alpha_GreeksGPR:
     def __init__(self):
         self.mae = []
         self.aae = []
         self.bestMAE = None
         self.bestAAE = None
 
-    def fit(self, alphas, price_dataset, validation_dataset):
+    def fit(self, alphas, class_, greeks_dataset, price_dataset, validation_dataset):
 
         for i, alpha_ in enumerate(alphas):
-            kernel = k.RBF()
-            mod = GaussianProcessRegressor(
-                kernel=kernel, optimizer=optim, alpha=alpha_, random_state=10
-            )
-            mod = fitGPR(
-                name=price_dataset,
+            mod = class_(alpha=alpha_)
+            mod = fitGreeksGPR(
+                greek_df=greeks_dataset,
+                price_df=price_dataset,
                 model=mod,
                 save=False,
-                time_=True,
+                time_=False,
+                restart=2,
             )
 
             # performance of the model
@@ -60,8 +80,8 @@ class cv_alpha_GPR:
             X = df[:, 1:]
             y = df[:, 0]
             aae_, mae_ = test_performanceGPR(X, y, mod, type_="both", to_return=True)
-            self.mae.append(mae_)
             self.aae.append(aae_)
+            self.mae.append(mae_)
 
             if i > 0:
                 if mae_ <= np.min(self.mae):
