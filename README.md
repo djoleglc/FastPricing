@@ -29,6 +29,7 @@ Given the competitiveness of a market-making environment, the ability to speedil
 
 ## Notebooks
 - `SimulationHeston.ipynb`
+- `MeasureSimulationTime.ipynb`
 - `GPR.ipynb`
 - `ParallelGPR.ipynb`
 - `NeuralNetLarge.ipynb`
