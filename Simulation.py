@@ -2,6 +2,11 @@ from HestonFFT import *
 import numpy as np
 import pandas as pd
 import math
+import scipy 
+import math
+import scipy.integrate
+import time 
+from Simulation import TimeHestonFFT 
 
 
 def GenerateGridsfromUniform(N, bound, seed=10):
@@ -138,3 +143,25 @@ def SimulateGridFFTCombination(
     if save:
         df.to_csv(name)
     return df
+
+
+
+
+
+def TimeHestonFFT(df):
+    K = df["K"].to_list()
+    T = df["T"].to_list()
+    r = df["r"].to_list()
+    nu = df["nu"].to_list()
+    kappa = df["kappa"].to_list()
+    sigma = df["sigma"].to_list()
+    rho = df["rho"].to_list()
+    V = df["V"].to_list()
+    start = time.time()
+    price = []
+    for j in range(len(V)):
+        price.append(
+            Call_Heston(K[j], T[j], r[j], nu[j], kappa[j], sigma[j], rho[j], 1, V[j])
+        )
+    end = time.time()
+    return end - start
