@@ -3,7 +3,7 @@ import numpy as np
 import matplotlib.pyplot as plt
 
 
-def visualize_errorNN(df, model, variable):
+def visualize_errorNN(df, model, variable, title = None):
     """
     Function used to visualize error of a Neural Network
 
@@ -32,12 +32,15 @@ def visualize_errorNN(df, model, variable):
         plt.scatter(var_array, error, s=3)
         plt.xlabel(var)
         plt.ylabel("Absolute Error")
-        plt.title(var)
+        if title == None:
+            plt.title(var)
+        else: 
+            plt.title(title)
         plt.savefig(f"NeuralNet - {var}")
         plt.show()
 
 
-def visualize_errorGPR(df, model, variable):
+def visualize_errorGPR(df, model, variable, title = None):
     """
     Function used to visualize error of a Neural Network
 
@@ -65,6 +68,9 @@ def visualize_errorGPR(df, model, variable):
         plt.scatter(var_array, error, s=3)
         plt.xlabel(var)
         plt.ylabel("Absolute Error")
-        plt.title(var)
+        if title == None:
+            plt.title(var)
+        else: 
+            plt.title(title)
         plt.savefig(f"GPR - {var}")
         plt.show()
