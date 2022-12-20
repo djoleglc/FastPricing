@@ -32,5 +32,12 @@ class ModelLarge(nn.Module):
         )
 
     def forward(self, x):
+        """
+        Inputs : 
+        
+            x : torch tensor 
+                input for which we need to estimate the price through the model 
+        
+        """
         output = self.model(x)
         return output
