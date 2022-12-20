@@ -22,8 +22,10 @@ def fitGPR(name, model, name_model=None, save=True, time_=False):
 
         number_models : int
                        variable that specifies how many models need to be fitted.
+        
         save : bool
              variable that describes if the model need to be fitted
+
 
         name_model: str
                   variable describing the how the model need to be saved, to use without .joblib extension.
