@@ -42,7 +42,7 @@ def visualize_errorNN(df, model, variable, title = None):
 
 def visualize_errorGPR(df, model, variable, title = None):
     """
-    Function used to visualize error of a Neural Network
+    Function used to visualize error of a GPR model or of sklearn model 
 
         df : pd.DataFrame
 
