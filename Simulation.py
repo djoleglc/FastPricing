@@ -2,14 +2,43 @@ from HestonFFT import *
 import numpy as np
 import pandas as pd
 import math
-import scipy 
-import math
-import scipy.integrate
-import time 
-from Simulation import TimeHestonFFT 
 
 
 def GenerateGridsfromUniform(N, bound, seed=10):
+
+    """
+
+    Inputs:
+
+        N : int
+           Number of observations to simulate
+
+        bound : dict
+              dictionary containing the bound for each parameters
+
+        seed : int
+              seed to be able to replicate results
+
+
+    Output:
+
+        gridT : numpy array
+
+        gridr : numpy array
+
+        gridnu : numpy array
+
+        gridkappa : numpy array
+
+        gridV : numpy array
+
+        gridrho : numpy array
+
+        gridsigma : numpy array
+
+
+
+    """
     np.random.seed(seed)
 
     n_col = 7
@@ -55,9 +84,31 @@ def SimulateGridFFTUniform(
     N, bound, seed=1000, save=True, name="HestonSimulationUnif.csv"
 ) -> pd.DataFrame:
     """
+
     Function to Simulate data that were drawn from Uniform distribution
     using the function GenerateGridsfromUniform. Note that in this case
     we are not doing all the possible combinations
+
+    Inputs:
+
+        N : int
+           number of observation to simulate
+
+        seed : int
+              seed used to generate random number
+
+        save : bool
+              boolean variable, if True the dataset is going to be saved
+
+        name : str
+               name used for saving the file, relevant only if save = True
+
+    Output:
+
+        df : pandas dataframe
+            pandas dataframe containing the price in the first column and the corresponding parameters
+            in the following columns
+
     """
     (
         gridK,
@@ -109,8 +160,38 @@ def SimulateGridFFTCombination(
     name="HestonSimulationComb.csv",
 ) -> pd.DataFrame:
     """
+
     Function to simulate price from linspaces calculating the price
     for all the combinations of the parameters
+
+    Inputs:
+
+        gridT : numpy array
+
+        gridr : numpy array
+
+        gridnu : numpy array
+
+        gridkappa : numpy array
+
+        gridV : numpy array
+
+        gridrho : numpy array
+
+        gridsigma : numpy array
+
+        save : bool
+              boolean variable, if True the dataset is going to be saved
+
+        name : str
+               name used for saving the file, relevant only if save = True
+
+    Output:
+
+        df : pandas dataframe
+            pandas dataframe containing the price in the first column and the corresponding parameters
+            in the following columns
+
     """
 
     # creation of a Dataframe to store the data
@@ -143,25 +224,3 @@ def SimulateGridFFTCombination(
     if save:
         df.to_csv(name)
     return df
-
-
-
-
-
-def TimeHestonFFT(df):
-    K = df["K"].to_list()
-    T = df["T"].to_list()
-    r = df["r"].to_list()
-    nu = df["nu"].to_list()
-    kappa = df["kappa"].to_list()
-    sigma = df["sigma"].to_list()
-    rho = df["rho"].to_list()
-    V = df["V"].to_list()
-    start = time.time()
-    price = []
-    for j in range(len(V)):
-        price.append(
-            Call_Heston(K[j], T[j], r[j], nu[j], kappa[j], sigma[j], rho[j], 1, V[j])
-        )
-    end = time.time()
-    return end - start
