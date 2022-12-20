@@ -1,96 +1,70 @@
-import pandas as pd
-import time
-from joblib import dump
+import torch
 import numpy as np
-import joblib
-import multiprocessing
-from TestPerformance import test_performanceGPR
+import matplotlib.pyplot as plt
 
 
-def fitGreeksGPR(
-    greek_df, price_df, model, name_model=None, save=False, time_=True, restart=2
-):
+def visualize_errorNN(df, model, variable):
     """
-    Function to fit a Parallel Gaussian Process Regressor given a Pandas dataframe containing in the first column
-    the price to learn, and in the remaining columns the feature used to learn the pricing function
-    Note that both greeks ans prices dataframe need to be pandas dataframe
+    Function used to visualize error of a Neural Network
 
-    - greek_df: string variable describing the name of the csv containing the greeks to use to help
-                the training phase ( in the following order "theta", "delta", "vega", "vegalt", "rho" )
-    - price_df: string variable describing the name of the csv containing prices (first columns) and features
-    - save: boolean variable that describes if the model need to be fitted
-    - name_model: string variable describing the how the model need to be saved, to use without .joblib extension.
-                  needed only when save = True
-    -time_ : boolean variable describing if it needed to return the fitting time
+        df : pd.DataFrame
+
+        model : nn.Module
+               pytorch neural network model
+
+        variable : list of str
+                 list of the name of variables for which we need to visualize the error
+
+
     """
-    greeks = pd.read_csv(greek_df, header=None)
-    greeks.columns = ["theta", "delta", "vega", "vegalt", "rho"]
+    df_ = df.to_numpy()[:, 1:]
+    X = df_[:, 1:]
+    y = df_[:, 0]
 
-    if model.__class__.__name__ == "DeltaGPR":
-        greek_variable = greeks.delta
-    elif model.__class__.__name__ == "RhoGPR":
-        greek_variable = greeks.rho
-    else:
-        raise Exception("Model not supported")
+    X = torch.from_numpy(X).double()
+    prediction = model(X).detach().numpy()
+    prediction = prediction.flatten()
+    y = y.flatten()
+    error = np.absolute(prediction - y)
 
-    df = pd.read_csv(price_df).to_numpy()[:, 1:]
-    X = df[:, 1:]
-    price, greek_variable = df[:, 0], greek_variable.to_numpy()
-
-    if model.__class__.__name__ == "DeltaGPR":
-        s = time.time()
-        model.fit(X, price, greek_variable - price, times=restart)
-        e = time.time()
-    if model.__class__.__name__ == "RhoGPR":
-        s = time.time()
-        model.fit(X, price, greek_variable, times=restart)
-        e = time.time()
-
-    if time_:
-        print(f"Fitting Time:  {e-s}")
-    if save:
-        dump(model, name_model)
-    return model
+    for var in variable:
+        var_array = df.loc[:, var].to_numpy()
+        plt.scatter(var_array, error, s=3)
+        plt.xlabel(var)
+        plt.ylabel("Absolute Error")
+        plt.title(var)
+        plt.savefig(f"NeuralNet - {var}")
+        plt.show()
 
 
-class cv_alpha_GreeksGPR:
-    def __init__(self):
-        self.mae = []
-        self.aae = []
-        self.bestMAE = None
-        self.bestAAE = None
+def visualize_errorGPR(df, model, variable):
+    """
+    Function used to visualize error of a Neural Network
 
-    def fit(self, alphas, class_, greeks_dataset, price_dataset, validation_dataset):
+        df : pd.DataFrame
 
-        for i, alpha_ in enumerate(alphas):
-            mod = class_(alpha=alpha_)
-            mod = fitGreeksGPR(
-                greek_df=greeks_dataset,
-                price_df=price_dataset,
-                model=mod,
-                save=False,
-                time_=False,
-                restart=2,
-            )
+        model : sklearn model or GreeksGPR model
 
-            # performance of the model
-            print(f"alpha:   {alpha_}")
-            print(validation_dataset)
-            df = pd.read_csv(validation_dataset).to_numpy()[:, 1:]
-            X = df[:, 1:]
-            y = df[:, 0]
-            aae_, mae_ = test_performanceGPR(X, y, mod, type_="both", to_return=True)
-            self.aae.append(aae_)
-            self.mae.append(mae_)
+        variable : list of str
+                 list of the name of variables for which we need to visualize the error
 
-            if i > 0:
-                if mae_ <= np.min(self.mae):
-                    self.bestMAE = mod
-                if aae_ <= np.min(self.aae):
-                    self.bestAAE = mod
-            else:
-                self.bestMAE = mod
-                self.bestAAE = mod
-            print("\n")
 
-        return self
+    """
+
+    df_ = df.to_numpy()[:, 1:]
+    X = df_[:, 1:]
+    y = df_[:, 0]
+
+    prediction = model.predict(X)
+    prediction = prediction.flatten()
+    y = y.flatten()
+    error = np.absolute(prediction - y)
+
+    for var in variable:
+        var_array = df.loc[:, var].to_numpy()
+        plt.scatter(var_array, error, s=3)
+        plt.xlabel(var)
+        plt.ylabel("Absolute Error")
+        plt.title(var)
+        plt.savefig(f"GPR - {var}")
+        plt.show()
