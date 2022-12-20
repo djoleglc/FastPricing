@@ -3,7 +3,37 @@ import matplotlib.pyplot as plt
 
 
 def plot3d(x, y, z, xlab, ylab, zlab, title, view=(25, 30)):
-    # we can also visualize the price
+    """
+
+    Input:
+
+        x : numpy array of shape (nx , ny)
+
+        y : numpy array of shape (nx , ny)
+
+        z : numpy array of shape (nx , ny)
+
+        xlab : str
+             label of the x-axis
+
+        ylab : str
+             label of the y-axis
+
+        zlab : str
+              label of the z-axis
+
+        title : str
+               title of the plot
+
+        view : tuple
+              tuple correspoing to the viewing angles of the 3d plot
+
+    Output:
+
+        None
+
+    """
+
     fig = plt.figure(figsize=(8, 8))
     ax = plt.axes(projection="3d")
     ax.view_init(view[0], view[1])
