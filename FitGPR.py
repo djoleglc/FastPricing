@@ -1,70 +1,119 @@
-import torch
+import pandas as pd
+import time
+from joblib import dump
 import numpy as np
-import matplotlib.pyplot as plt
+from sklearn.gaussian_process import GaussianProcessRegressor
+import sklearn.gaussian_process.kernels as k
+from optim import optim
+from TestPerformance import test_performanceGPR
 
 
-def visualize_errorNN(df, model, variable):
+def fitGPR(name, model, name_model=None, save=True, time_=False):
     """
-    Function used to visualize error of a Neural Network
+    Function to fit a Parallel Gaussian Process Regressor given a Pandas dataframe containing in the first column
+    the price to learn, and in the remaining columns the feature used to learn the pricing function
 
-        df : pd.DataFrame
+    Inputs:
 
-        model : nn.Module
-               pytorch neural network model
+        name : str
+            variable describing the name of the dataset to use as training sample.
 
-        variable : list of str
-                 list of the name of variables for which we need to visualize the error
+        model : sklearn model
 
+        number_models : int
+                       variable that specifies how many models need to be fitted.
+        save : bool
+             variable that describes if the model need to be fitted
 
-    """
-    df_ = df.to_numpy()[:, 1:]
-    X = df_[:, 1:]
-    y = df_[:, 0]
+        name_model: str
+                  variable describing the how the model need to be saved, to use without .joblib extension.
+                  needed only when save = True
 
-    X = torch.from_numpy(X).double()
-    prediction = model(X).detach().numpy()
-    prediction = prediction.flatten()
-    y = y.flatten()
-    error = np.absolute(prediction - y)
+       time_ : bool
+              variable describing if it needed to return the fitting time
 
-    for var in variable:
-        var_array = df.loc[:, var].to_numpy()
-        plt.scatter(var_array, error, s=3)
-        plt.xlabel(var)
-        plt.ylabel("Absolute Error")
-        plt.title(var)
-        plt.savefig(f"NeuralNet - {var}")
-        plt.show()
+    Output:
 
-
-def visualize_errorGPR(df, model, variable):
-    """
-    Function used to visualize error of a Neural Network
-
-        df : pd.DataFrame
-
-        model : sklearn model or GreeksGPR model
-
-        variable : list of str
-                 list of the name of variables for which we need to visualize the error
+        self : sklearn model
 
 
     """
+    df = pd.read_csv(name).to_numpy()[:, 1:]
+    X = df[:, 1:]
+    y = df[:, 0]
+    s = time.time()
+    model.fit(X, y)
+    e = time.time()
+    if time_:
+        print(f"Fitting Time:  {e-s}")
+    if save:
+        dump(model, name_model)
+    return model
 
-    df_ = df.to_numpy()[:, 1:]
-    X = df_[:, 1:]
-    y = df_[:, 0]
 
-    prediction = model.predict(X)
-    prediction = prediction.flatten()
-    y = y.flatten()
-    error = np.absolute(prediction - y)
+class cv_alpha_GPR:
 
-    for var in variable:
-        var_array = df.loc[:, var].to_numpy()
-        plt.scatter(var_array, error, s=3)
-        plt.xlabel(var)
-        plt.ylabel("Absolute Error")
-        plt.title(var)
-        plt.savefig(f"GPR - {var}")
-        plt.show()
+    """
+
+    Class that define an validation procedure
+
+    """
+
+    def __init__(self):
+        self.mae = []
+        self.aae = []
+        self.bestMAE = None
+        self.bestAAE = None
+
+    def fit(self, alphas, price_dataset, validation_dataset):
+        """
+        Function to fit the model for each alpha
+
+        Inputs:
+
+            alphas : list or numpy array
+                    contains the values of alpha to use in the model
+
+            price_dataset : pd.DataFrame
+
+            validation_dataset : pd.DataFrame
+
+        Output:
+
+            cv_alpha_GPR object
+
+        """
+
+        for i, alpha_ in enumerate(alphas):
+            kernel = k.RBF()
+            mod = GaussianProcessRegressor(
+                kernel=kernel, optimizer=optim, alpha=alpha_, random_state=10
+            )
+            mod = fitGPR(
+                name=price_dataset,
+                model=mod,
+                save=False,
+                time_=True,
+            )
+
+            # performance of the model
+            print(f"alpha:   {alpha_}")
+            print(validation_dataset)
+            df = pd.read_csv(validation_dataset).to_numpy()[:, 1:]
+            X = df[:, 1:]
+            y = df[:, 0]
+            aae_, mae_ = test_performanceGPR(X, y, mod, type_="both", to_return=True)
+            self.mae.append(mae_)
+            self.aae.append(aae_)
+
+            if i > 0:
+                if mae_ <= np.min(self.mae):
+                    self.bestMAE = mod
+                if aae_ <= np.min(self.aae):
+                    self.bestAAE = mod
+            else:
+                self.bestMAE = mod
+                self.bestAAE = mod
+            print("\n")
+
+        return self
