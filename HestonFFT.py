@@ -33,20 +33,38 @@ def D_CF(u, t, sigma, rho, bj, uj):
 def Call_Heston(K, T, r, nu, kappa, sigma, rho, S, V):
 
     """Call_Heston:  Compute the value of call option using the formula in
-    % Heston[1993], see also formula (6) in Albrecher et Al.[2006].
-    %
-    % USAGE: P = Call_Heston(K, T, r, nu, kappa, sigma, rho, S, V, modif);
-    %
-    % PARAMETERS:
-    %    Input:
-    %         K: strike price of the call option
-    %         T: maturity of the call option
-    %         r: risk free rate
-    %         nu, kappa, sigma: parameters of the Heston model
-    %         rho: correlation parameter between the stock and vol processes
-    %         S, V: initial stock price and volatility
-    %    Output:
-    %        P: price of the call option.
+    Heston[1993], see also formula (6) in Albrecher et Al.[2006].
+
+    USAGE: P = Call_Heston(K, T, r, nu, kappa, sigma, rho, S, V, modif);
+
+    PARAMETERS:
+       Input:
+            K : float
+              strike price of the call option
+
+            T : float
+              maturity of the call option
+
+            r : float
+              risk free rate
+
+            nu : float
+               long term variance
+
+            kappa : float
+                  speed of mean reversion
+
+            sigma : float
+                  parameters of the Heston model
+
+            rho : float
+                correlation parameter between the stock and vol processes
+
+            S, V : float , float
+                 initial stock price and volatility
+       Output:
+           P : float
+             price of the call option.
     """
     b1 = kappa - rho * sigma
     b2 = kappa
