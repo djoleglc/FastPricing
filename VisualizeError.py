@@ -4,6 +4,19 @@ import matplotlib.pyplot as plt
 
 
 def visualize_errorNN(df, model, variable):
+    """
+    Function used to visualize error of a Neural Network
+
+        df : pd.DataFrame
+
+        model : nn.Module
+               pytorch neural network model
+
+        variable : list of str
+                 list of the name of variables for which we need to visualize the error
+
+
+    """
     df_ = df.to_numpy()[:, 1:]
     X = df_[:, 1:]
     y = df_[:, 0]
@@ -25,6 +38,18 @@ def visualize_errorNN(df, model, variable):
 
 
 def visualize_errorGPR(df, model, variable):
+    """
+    Function used to visualize error of a Neural Network
+
+        df : pd.DataFrame
+
+        model : sklearn model or GreeksGPR model
+
+        variable : list of str
+                 list of the name of variables for which we need to visualize the error
+
+
+    """
 
     df_ = df.to_numpy()[:, 1:]
     X = df_[:, 1:]
