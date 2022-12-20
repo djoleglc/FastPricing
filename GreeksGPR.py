@@ -10,9 +10,33 @@ import sklearn.gaussian_process.kernels as k
 
 class DeltaGPR:
     def __init__(self, alpha):
+        """
+        Inputs:
+
+            alpha : float
+                   value to set as default alpha (regularization parameter)
+
+        """
         self.alpha = alpha
 
     def optim(self, obj_func, initial_theta, bounds):
+        """
+        Inputs:
+
+            obj_func : function
+                     function to minimize
+
+            initial_theta : float or list of float
+
+            bounds : list of tuples
+
+        Outputs:
+
+            theta_opt : float
+
+            func_min : float
+
+        """
         opt = {}
         opt["maxiter"] = 5000
         optimResult = scipy.optimize.minimize(
@@ -29,6 +53,25 @@ class DeltaGPR:
         return theta_opt, func_min
 
     def kernel(self, l, X, index_k):
+        """
+        Function used to calculate the kernel of the GreeksGPR
+
+        Inputs:
+
+            l : float
+               lenght scale parameter
+
+            X  : numpy array
+                matrix of features
+
+            index_k : int
+                     index of the feature corresponding to the greek in the X matrix
+
+        Output:
+
+            result : numpy array
+
+        """
         n = X.shape[0]
         RBF = k.RBF(length_scale=l)
         K_price = RBF(X)
@@ -48,20 +91,76 @@ class DeltaGPR:
     def loglikeGPR(self, X, y, sigma, K):
         """
         function to calculate the loglike to maximize
+
+        Inputs:
+
+            X  : numpy array
+                matrix of features
+
+            y : numpy array
+               true values of prices
+
+            sigma : float
+                   regularization parameter
+
+            K : numpy array
+               kernel matrix
+
+        Output:
+
+            result : float
+
         """
         M = K + np.eye(K.shape[0]) * sigma
         L = cholesky(M, lower=True)
         alpha = cho_solve((L, True), y)
         LogDet = np.log(np.diag(L)).sum()
         loglike = -0.5 * y.T @ alpha - LogDet - K.shape[0] / 2 * np.log(2 * np.pi)
-        return loglike.sum(axis=-1)
+        result = loglike.sum(axis=-1)
+        return result
 
     def Loglike(self, X, price, delta, l, sigma):
+        """
+        Inputs:
+
+            X  : numpy array
+                matrix of features
+
+            price : numpy array
+               true values of prices
+
+            delta : numpy array
+                   values of the greeks to use to train the model
+
+            l : float
+               length scale parameter
+
+            sigma : float
+                   regularization parameter
+
+        Output:
+
+            loglikelihood : float
+
+
+        """
+
         K = self.kernel(l, X, 6)
         loglikelihood = self.loglikeGPR(np.r_[X, X], np.r_[price, delta], sigma, K)
         return loglikelihood
 
     def optimization(self, initial):
+        """
+        Inputs:
+
+            initial : float
+                    initial value to use for the optimization
+
+        Output :
+
+            opt : scipy minimization object
+
+        """
         sigma = self.alpha
         X = self.Xtrain
         price = self.price
@@ -73,6 +172,21 @@ class DeltaGPR:
         return opt
 
     def fit(self, Xtrain, price, delta, times=2):
+        """
+
+        Xtrain : numpy array
+                matrix of feature for the training
+
+        price : numpy array
+               prices to use for the training
+
+        delta : numpy array
+               greeks to use for the training
+
+        times : int
+               number of times used to repeat the optimization
+
+        """
         self.Xtrain = Xtrain
         self.price = price.reshape(-1, 1)
         self.delta = delta.reshape(-1, 1)
@@ -99,18 +213,56 @@ class DeltaGPR:
         self.alpha_ = cho_solve((self.L, True), self.y)
 
     def predict(self, Xtest):
+        """
+        Inputs:
+
+            Xtest : numpy array
+                   matrix of feature for which estimate the price
+
+        Output:
+
+            predicted : numpy array
+                       prices predicted by the model
+
+        """
         kern = k.RBF(length_scale=self.length_scale, length_scale_bounds="fixed")
         gprM = GaussianProcessRegressor(
             kernel=kern, alpha=self.alpha, optimizer=self.optim
         ).fit(self.Xtrain, self.price)
-        return gprM.predict(Xtest)
+        predicted = gprM.predict(Xtest)
+        return predicted
 
 
 class RhoGPR:
     def __init__(self, alpha):
+        """
+        Inputs:
+
+            alpha : float
+                   value to set as default alpha (regularization parameter)
+
+        """
         self.alpha = alpha
-        
+
     def optim(self, obj_func, initial_theta, bounds):
+        """
+        Inputs:
+
+            obj_func : function
+                     function to minimize
+
+            initial_theta : float or list of float
+
+            bounds : list of tuples
+
+        Outputs:
+
+            theta_opt : float
+
+            func_min : float
+
+        """
+
         opt = {}
         opt["maxiter"] = 5000
         optimResult = scipy.optimize.minimize(
@@ -127,6 +279,26 @@ class RhoGPR:
         return theta_opt, func_min
 
     def kernel(self, l, X, index_k):
+        """
+        Function used to calculate the kernel of the GreeksGPR
+
+        Inputs:
+
+            l : float
+               lenght scale parameter
+
+            X  : numpy array
+                matrix of features
+
+            index_k : int
+                     index of the feature corresponding to the greek in the X matrix
+
+        Output:
+
+            result : numpy array
+
+        """
+
         n = X.shape[0]
         RBF = k.RBF(length_scale=l)
         K_price = RBF(X)
@@ -146,6 +318,25 @@ class RhoGPR:
     def loglikeGPR(self, X, y, sigma, K):
         """
         function to calculate the loglike to maximize
+
+        Inputs:
+
+            X  : numpy array
+                matrix of features
+
+            y : numpy array
+               true values of prices
+
+            sigma : float
+                   regularization parameter
+
+            K : numpy array
+               kernel matrix
+
+        Output:
+
+            result : float
+
         """
         M = K + np.eye(K.shape[0]) * sigma
         L = cholesky(M, lower=True)
@@ -155,11 +346,47 @@ class RhoGPR:
         return loglike.sum(axis=-1)
 
     def Loglike(self, X, price, rho, l, sigma):
+        """
+        Inputs:
+
+            X  : numpy array
+                matrix of features
+
+            price : numpy array
+               true values of prices
+
+            rho : numpy array
+                   values of the greeks to use to train the model
+
+            l : float
+               length scale parameter
+
+            sigma : float
+                   regularization parameter
+
+        Output:
+
+            loglikelihood : float
+
+
+        """
+
         K = self.kernel(l, X, 4)
         loglikelihood = self.loglikeGPR(np.r_[X, X], np.r_[price, rho], sigma, K)
         return loglikelihood
 
     def optimization(self, initial):
+        """
+        Inputs:
+
+            initial : float
+                    initial value to use for the optimization
+
+        Output :
+
+            opt : scipy minimization object
+
+        """
         sigma = self.alpha
         X = self.Xtrain
         price = self.price
@@ -171,6 +398,21 @@ class RhoGPR:
         return opt
 
     def fit(self, Xtrain, price, rho, index_rho=4, times=2):
+        """
+
+        Xtrain : numpy array
+                matrix of feature for the training
+
+        price : numpy array
+               prices to use for the training
+
+        rho : numpy array
+               greeks to use for the training
+
+        times : int
+               number of times used to repeat the optimization
+
+        """
         self.Xtrain = Xtrain
         self.price = price.reshape(-1, 1)
         self.rho = rho.reshape(-1, 1)
@@ -198,8 +440,21 @@ class RhoGPR:
         self.alpha_ = cho_solve((self.L, True), self.y)
 
     def predict(self, Xtest, method="Greeks"):
+        """
+        Inputs:
+
+            Xtest : numpy array
+                   matrix of feature for which estimate the price
+
+        Output:
+
+            predicted : numpy array
+                       prices predicted by the model
+
+        """
         kern = k.RBF(length_scale=self.length_scale, length_scale_bounds="fixed")
         gprM = GaussianProcessRegressor(
             kernel=kern, alpha=self.alpha, optimizer=self.optim
         ).fit(self.Xtrain, self.price)
-        return gprM.predict(Xtest)
+        predicted = gprM.predict(Xtest)
+        return predicted
