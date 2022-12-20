@@ -32,7 +32,8 @@ def D_CF(u, t, sigma, rho, bj, uj):
 
 def Call_Heston(K, T, r, nu, kappa, sigma, rho, S, V):
 
-    """Call_Heston:  Compute the value of call option using the formula in
+    """
+    Call_Heston:  Compute the value of call option using the formula in
     Heston[1993], see also formula (6) in Albrecher et Al.[2006].
 
     USAGE: P = Call_Heston(K, T, r, nu, kappa, sigma, rho, S, V, modif);
