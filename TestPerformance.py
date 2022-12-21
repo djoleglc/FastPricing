@@ -60,7 +60,7 @@ def test_performanceGPR(X_, y_, model, type_="mean", to_return=False):
             return AAE, MAE
 
 
-def test_performanceNN(X_, y_, model, type_="mean", to_return=False, time_=False):
+def test_performanceNN(X_, y_, model, type_="mean", to_return=True, time_=False):
     """
      Function to evaluate the perfomance of a GPR based on a test set
 
