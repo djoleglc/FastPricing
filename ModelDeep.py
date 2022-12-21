@@ -48,5 +48,5 @@ class ModelDeep(nn.Module):
                 input for which we need to estimate the price through the model 
         
         """
-        output = self.model(x)
+        output = self.model(x.double())
         return output
