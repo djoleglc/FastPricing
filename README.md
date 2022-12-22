@@ -10,7 +10,7 @@ Datasets and model weights are available at: https://drive.google.com/drive/fold
 - Francesco Pettenon: francesco.pettenon@epfl.ch
 - Nicolò Taroni: nicolo.taroni@epfl.ch
 
-## Supervisors
+### Supervisors
 - Urban Urlych: urban.urlych@epfl.ch
 - Puneet Pasricha: puneet.pasricha@epfl.ch
 
