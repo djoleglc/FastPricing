@@ -11,18 +11,18 @@ Datasets and model weights are available at: https://drive.google.com/drive/fold
 - Nicolò Taroni
 
 ## Create dataset
-- `HestonFFT.py`: testblabla
-- `Simulation.py`
+- `HestonFFT.py`: file containing functions to obtain call option prices using Heston model via Fast Fourier Transform.
+- `Simulation.py`: file containng functions to create grids of parameters and simulate call option prices.
 
 ## Gaussian Process Regression
-- `FitGPR.py`
-- `ParallelGPR.py`
-- `GreeksGPR.py`
-- `FitGreeksGPR.py`
+- `FitGPR.py`: file containing functions to fit, save a timing a GPR model.
+- `ParallelGPR.py`: file containing the implementation of the class ParallelGPR.
+- `GreeksGPR.py`: file containing implementation of the class DeltaGPR and RhoGPR.
+- `FitGreeksGPR.py`: file containig functions to fit, save and timing GreeksGPR models.
 
 ## Neural Network
-- `ModelDeep.py`
-- `ModelLarge.py`
+- `ModelDeep.py`: file contating implementation of Neural Network Deep.|
+- `ModelLarge.py`: file contating implementation of Neural Network Deep.|
 
 ## Utils
 - `TestPerformance.py`
