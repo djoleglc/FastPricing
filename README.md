@@ -6,9 +6,13 @@ The essential focus of this project is the study of the speed-up accuracy trade-
 Datasets and model weights are available at: https://drive.google.com/drive/folders/1f1FzBFMSWmIym31mLibrDB1_qywd_xdq?usp=sharing
 
 ### Team
-- Giovanni La Cagnina
-- Francesco Pettenon
-- Nicolò Taroni
+- Giovanni La Cagnina: giovanni.lacagnina@epfl.ch
+- Francesco Pettenon: francesco.pettenon@epfl.ch
+- Nicolò Taroni: nicolo.taroni@epfl.ch
+
+## Supervisors
+- Urban Urlych: urban.urlych@epfl.ch
+- Puneet Pasricha: puneet.pasricha@epfl.ch
 
 ## Create dataset
 - `HestonFFT.py`: file containing functions to obtain call option prices using Heston model via Fast Fourier Transform.
