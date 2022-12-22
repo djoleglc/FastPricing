@@ -28,7 +28,7 @@ Datasets and model weights are available at: https://drive.google.com/drive/fold
 - `TestPerformance.py`: file containing functions to test the performances of implemented models.
 - `VisualizeError.py`: file containing functions to visualize the errors of the model with respect to the feature used.
 - `PlotUtils.py`: file containing functions to visualize the Greeks surfaces.
-- `optim.py`: file containing the optimizer used for GPR models and for GreeksGPR models.
+- `optim.py`: file containing the optimizer used for GPR models and for GreeksGPR models to minimize the log-likelihood.
 
 ## Greeks
 - `Greeks.py`: file containing functions used to implemente the calculation of the Greeks using GPR, and Neural Networks model.
